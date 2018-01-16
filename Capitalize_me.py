@@ -31,29 +31,38 @@ def noun_capitalizer(sentence):
 	
 	for i in range(0,len(tagging)):
 		flag = 0
+
 		if tagging[i][1] == 'NN' or tagging[i][1] == 'NNS'or tagging[i][1] == 'NNP' or tagging[i][1] == 'NNPS':
 			if tagging[i][2].find('PERSON') >= 0 :
-				flag = flag  + 1 
-			elif (i+1) < len(tagging) and tagging[i+1][2].find('PERSON') >=0:
 				flag = flag  + 1
 			elif tagging[i][2].find('GPE') >=0:
 				flag = flag  + 1
 			elif tagging[i][2].find('ORGANIZATION') >=0:
-				flag = flag  + 1
-		elif tagging[i][1] == 'PRP' and tagging[i][0] == 'I':
+				if (i-1) < len(tagging) and not(tagging[i-1][2].find('ORGANIZATION') >=0 or tagging[i-1][0] == '.' or tagging[i-1][0] == ';' or tagging[i-1][0] == ','):
+					flag = flag  + 1
+			
+		elif tagging[i][1] == 'PRP' and tagging[i][0] == 'I':	
 			flag = flag  + 1
 		elif tagging[i][0] in string.punctuation:
 			flag = flag  + 1
 		elif i == 0:
 			flag =flag  + 1
-		
+		elif (i-1) < len(tagging):
+			if tagging[i-1][0] == '.':
+				flag = flag + 1
+
 		if(i == len(tagging) - 2):
 			if flag > 0:
 				sentences_new = sentences_new +tagging[i][0]
 			else:
 				s= tagging[i][0]
 				sentences_new = sentences_new +s[0].lower() + s[1:] 
-
+		elif (i+1) < len(tagging) and (tagging[i+1][0] == ',' or tagging[i+1][0] == '.' or tagging[i+1][0] == ';' ):
+			if flag > 0:
+				sentences_new = sentences_new + tagging[i][0]
+			else:
+				s= tagging[i][0]
+				sentences_new = sentences_new + s[0].lower() + s[1:]
 		else:
 			if flag > 0:
 				sentences_new = sentences_new + tagging[i][0] + ' '
